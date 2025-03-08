@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Education - Resume Builder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2ecc71;
+            --primary-dark: #1e40af;
+            --secondary: #f0f9ff;
+            --accent: #3b82f6;
+            --text: #1e293b;
+            --light-text: #64748b;
+            --background: #f8fafc;
+            --card: #ffffff;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+        }
+
+        nav {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            padding: 1rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .progress-container {
+            max-width: 1200px;
+            margin: 100px auto 30px;
+            padding: 2rem;
+            background: var(--card);
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 25px;
+            left: 40px;
+            right: 40px;
+            height: 3px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+
+        .progress-line-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 80%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: width 0.5s ease;
+        }
+
+        .step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .step-circle {
+            width: 50px;
+            height: 50px;
+            background: var(--card);
+            border: 3px solid #e2e8f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 10px;
+            transition: all 0.3s ease;
+        }
+
+        .step.completed .step-circle {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .step.active .step-circle {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+            box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.2);
+        }
+
+        .step-label {
+            font-size: 0.9rem;
+            color: var(--light-text);
+            margin-top: 0.5rem;
+        }
+
+        .step.active .step-label {
+            color: #3498db;
+            font-weight: 600;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .education-form {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .education-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .add-education-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .add-education-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+        }
+
+        .education-card {
+            background: var(--secondary);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            animation: slideIn 0.5s ease;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .education-card:hover {
+            border-color: var(--accent);
+            transform: translateX(10px);
+        }
+
+        .education-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .achievements {
+            margin-top: 1.5rem;
+        }
+
+        .achievement-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .achievement-input {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        .remove-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background: #dc2626;
+            transform: scale(1.05);
+        }
+
+        .add-achievement-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .add-achievement-btn:hover {
+            background: #3498db;
+            transform: translateY(-2px);
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .nav-btn {
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back {
+            background: white;
+            border: 2px solid #3498db;
+            color: #3498db;
+        }
+
+        .btn-next {
+            background: var(--primary);
+            border: none;
+            color: white;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .education-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .progress-container {
+                padding: 1rem;
+            }
+            
+            .step-label {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <a href="#" class="logo">ResumeBuilder</a>
+        </div>
+    </nav>
+
+    <div class="progress-container">
+        <div class="progress-steps">
+            <div class="progress-line">
+                <div class="progress-line-fill"></div>
+            </div>
+            <div class="step completed">
+                <div class="step-circle">✓</div>
+                <div class="step-label">Template</div>
+            </div>
+            <div class="step completed">
+                <div class="step-circle">✓</div>
+                <div class="step-label">Personal Info</div>
+            </div>
+            <div class="step completed">
+                <div class="step-circle">✓</div>
+                <div class="step-label">Experience</div>
+            </div>
+            <div class="step active">
+                <div class="step-circle">4</div>
+                <div class="step-label">Education</div>
+            </div>
+            <div class="step">
+                <div class="step-circle">5</div>
+                <div class="step-label">Review</div>
+            </div>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <form class="education-form">
+            <div class="education-header">
+                <h2>Education</h2>
+                <button type="button" class="add-education-btn">
+                    + Add Education
+                </button>
+            </div>
+
+            <div id="education-container">
+                <div class="education-card">
+                    <div class="education-grid">
+                        <div class="form-group">
+                            <label class="form-label">School/University Name</label>
+                            <input type="text" class="form-input" placeholder="e.g. Stanford University" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Degree</label>
+                            <input type="text" class="form-input" placeholder="e.g. Bachelor of Science" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Field of Study</label>
+                            <input type="text" class="form-input" placeholder="e.g. Computer Science" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">GPA</label>
+                            <input type="text" class="form-input" placeholder="e.g. 3.8">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Start Date</label>
+                            <input type="date" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">End Date</label>
+                            <input type="date" class="form-input" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">Location</label>
+                            <input type="text" class="form-input" placeholder="e.g. Stanford, CA" required>
+                        </div>
+                    </div>
+
+                    <div class="achievements">
+                        <label class="form-label">Achievements & Activities</label>
+                        <div class="achievements-container">
+                            <div class="achievement-item">
+                                <input type="text" class="achievement-input" placeholder="Add an achievement">
+                                <button type="button" class="remove-btn">Remove</button>
+                            </div>
+                        </div>
+                        <button type="button" class="add-achievement-btn">+ Add Achievement</button>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="add-education-btn w-full">
+                + Add Another Education
+            </button>
+
+            <div class="nav-buttons">
+                <button type="button" onclick="window.location.href='/experience'" class="nav-btn btn-back">Back</button>
+                <button type="submit" class="nav-btn btn-next">Next Step</button>
+            </div>
+        </form>
+    </main>
+    <script >
+
+document.querySelector(".education-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const educations = [];
+    document.querySelectorAll(".education-card").forEach((card) => {
+        const education = {
+            institution: card.querySelector('input[placeholder="e.g. Stanford University"]').value,
+            degree: card.querySelector('input[placeholder="e.g. Bachelor of Science"]').value,
+            field: card.querySelector('input[placeholder="e.g. Computer Science"]').value,
+            graduation_date: card.querySelectorAll('input[type="date"]')[1].value, // End date as graduation date
+            description: Array.from(card.querySelectorAll('.achievement-input'))
+                .map(input => input.value.trim())
+                .filter(value => value !== '')
+                .join('; ') // Convert achievements to a single string
+        };
+        educations.push(education);
+    });
+
+    const resumeId = localStorage.getItem('currentResumeId');
+    const token = localStorage.getItem('token');
+console.log(educations);
+    try {
+//         const ngrokResponse = await fetch("/api/ngrok-url");
+// const ngrokData = await ngrokResponse.json();
+// const ngrokUrl = ngrokData.ngrokUrl || "http://localhost:3000"; 
+        const response = await fetch(`/api/resumes/${resumeId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-auth-token': token
+            },
+            body: JSON.stringify({
+                education: educations
+            })
+        });
+  await response.json();
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to save education');
+        }
+
+      
+        window.location.href='/qrcodegenerate.html';
+      // window.location.href = '/review'; 
+       // // Redirect to review page
+    } catch (error) {
+        console.error('Error:', error);
+        alert(error.message || 'Failed to save education');
+    }
+});
+
+
+    </script>
+</body>
+</html>

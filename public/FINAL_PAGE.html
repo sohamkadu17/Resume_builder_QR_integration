@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview - Resume Builder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #f0f9ff;
+            --accent: #3b82f6;
+            --text: #1e293b;
+            --light-text: #64748b;
+            --background: #f8fafc;
+            --card: #ffffff;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        nav {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            padding: 1rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 100px auto 0;
+            padding: 2rem;
+            display: flex;
+            gap: 2rem;
+        }
+
+        .preview-controls {
+            width: 300px;
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+        }
+
+        .control-panel {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        .control-header {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--secondary);
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .template-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+        }
+        .layout-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .layout-option {
+            width: calc(50% - 5px);
+            height: 60px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .layout-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .layout-option.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+        }
+
+        .layout-option .layout-preview {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .layout-preview.modern {
+            background: linear-gradient(to right, #f8fafc 70%, #e2e8f0 70%);
+        }
+
+        .layout-preview.classic {
+            background: white;
+            border-top: 5px solid #2563eb;
+        }
+
+        .layout-preview.minimal {
+            background: white;
+        }
+
+        .layout-preview.creative {
+            background: linear-gradient(135deg, #f8fafc 70%, rgba(37, 99, 235, 0.2) 70%);
+        }
+        .color-options {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.active {
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-download {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .btn-edit {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-share {
+            background: var(--accent);
+            color: white;
+            border: none;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .resume-preview {
+            flex: 1;
+            background: var(--card);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+            min-height: 1000px;
+        }
+  /* Layout Styles */
+  .resume-preview.modern {
+            display: grid;
+            grid-template-columns: 70% 30%;
+            padding: 0;
+            overflow: hidden;
+        }
+        .resume-preview.modern .resume-main-content {
+            padding: 3rem;
+        }
+
+        .resume-preview.modern .resume-sidebar {
+            background: var(--secondary);
+            padding: 3rem 1.5rem;
+        }
+
+        .resume-preview.classic {
+            border-top: 10px solid var(--primary);
+        }
+
+        .resume-preview.minimal {
+            padding: 4rem;
+            background: white;
+            box-shadow: none;
+            border: 1px solid #e2e8f0;
+        }
+
+        .resume-preview.creative {
+            background: linear-gradient(135deg, white 85%, var(--primary) 15%);
+            border-radius: 0;
+        }
+        .resume-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--secondary);
+        }
+        .resume-preview.modern .resume-header,
+        .resume-preview.creative .resume-header {
+            text-align: left;
+        }
+        .resume-name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .resume-contact {
+            color: var(--light-text);
+            font-size: 1rem;
+        }
+
+        .resume-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--secondary);
+        }
+        .resume-preview.minimal .section-title {
+            border-bottom: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1.2rem;
+        }
+
+        .experience-item,
+        .education-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .item-date {
+            color: var(--light-text);
+        }
+
+        .item-subtitle {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .item-description {
+            color: var(--light-text);
+        }
+
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .skill-tag {
+            background: var(--secondary);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .preview-controls {
+                width: 100%;
+                position: static;
+            }
+        }
+
+        @media print {
+
+            nav,
+            .preview-controls {
+                display: none;
+            }
+
+            .main-content {
+                margin: 0;
+                padding: 0;
+            }
+
+            .resume-preview {
+                box-shadow: none;
+                padding: 2rem;
+            }
+        }
+        .qr-code-container {
+    text-align: end;
+    padding: 2rem;
+    background: white;
+    border-radius: 15px;
+    margin: 2rem 0;
+}
+
+.qr-code-container img {
+    max-width: 200px;
+    margin: 0 auto 1rem auto;
+    border: 5px solid #fff;
+    border-radius: 10px;
+ 
+}
+
+.file-links {
+    margin-top: 1rem;
+    color: var(--text);
+}
+
+.btn-qr {
+    background: #3498db;
+    color: white;
+    border: none;
+}
+
+.btn-qr:hover {
+    background: #2980b9;
+}
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-content">
+            <a href="#" class="logo">ResumeBuilder</a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <aside class="preview-controls">
+            <div class="control-panel">
+                <h3 class="control-header">Template</h3>
+                <div class="control-group">
+                    <label class="control-label">Layout Style</label>
+                    <div class="layout-options">
+                        <div class="layout-option" data-layout="default">
+                            <div class="layout-preview">
+                                <div style="height: 10px; background: #2563eb; margin-bottom: 5px;"></div>
+                                <div style="height: 5px; width: 60%; background: #e2e8f0; margin: 0 auto 5px;"></div>
+                                <div style="height: 3px; width: 80%; background: #e2e8f0; margin: 0 auto 5px;"></div>
+                                <div style="height: 3px; width: 70%; background: #e2e8f0; margin: 0 auto;"></div>
+                            </div>
+                        </div>
+                        <div class="layout-option" data-layout="modern">
+                            <div class="layout-preview modern">
+                                <div style="height: 60px; display: flex;">
+                                    <div style="width: 70%; height: 100%; padding: 5px;">
+                                        <div style="height: 5px; width: 50%; background: #e2e8f0; margin-bottom: 5px;"></div>
+                                        <div style="height: 3px; width: 70%; background: #e2e8f0;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layout-option" data-layout="classic">
+                            <div class="layout-preview classic">
+                                <div style="height: 10px; width: 50%; background: #e2e8f0; margin: 10px auto 5px;"></div>
+                                <div style="height: 3px; width: 70%; background: #e2e8f0; margin: 0 auto 5px;"></div>
+                                <div style="height: 3px; width: 60%; background: #e2e8f0; margin: 0 auto;"></div>
+                            </div>
+                        </div>
+                        <div class="layout-option" data-layout="creative">
+                            <div class="layout-preview creative">
+                                <div style="height: 10px; width: 50%; background: #e2e8f0; margin: 10px 0 5px 10px;"></div>
+                                <div style="height: 3px; width: 70%; background: #e2e8f0; margin: 0 0 5px 10px;"></div>
+                                <div style="height: 3px; width: 60%; background: #e2e8f0; margin: 0 0 0 10px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <select class="template-select">
+                        <option value="default">Default Layout</option>
+                        <option value="modern">Modern Split</option>
+                        <option value="classic">Classic Professional</option>
+                        <option value="creative">Creative Accent</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Accent Color</label>
+                    <div class="color-options">
+                        <div class="color-option active" style="background: #2563eb;"></div>
+                        <div class="color-option" style="background: #059669;"></div>
+                        <div class="color-option" style="background: #7c3aed;"></div>
+                        <div class="color-option" style="background: #db2777;"></div>
+                        <div class="color-option" style="background: #ea580c;"></div>
+                        <div class="color-option" style="background: #000000;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn btn-download">Download PDF</button>
+                <button type="button" onclick="window.location.href='review_trials.html'" class="action-btn btn-edit">Edit Resume</button>
+                <button class="action-btn btn-share">Share Resume</button>
+            </div>
+        </aside>
+
+        <div class="resume-preview">
+            <div class="resume-header">
+               
+                <div class="resume-name"></div>
+                <div class="resume-contact">
+                  
+                </div>
+            </div>
+
+            <div class="resume-section">
+                <h2 class="section-title">Professional Experience</h2>
+                <div class="experience-item">
+                    <div class="item-header">
+                        <div class="item-title"></div>
+                        <div class="item-date"></div>
+                    </div>
+                    <div class="item-subtitle"></div>
+                    <div class="item-description">
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div class="resume-section">
+                <h2 class="section-title">Education</h2>
+                <div class="education-item">
+                    <div class="item-header">
+                        <div class="item-title"></div>
+                        <div class="item-date"></div>
+                    </div>
+                    <div class="item-subtitle"></div>
+                    <div class="item-description">
+                        GPA: <br>
+                     hackthons
+                    </div>
+                </div>
+            </div>
+
+            <div class="resume-section">
+                <h2 class="section-title">Skills</h2>
+                <div class="skills-list">
+                    <span class="skill-tag">JavaScript</span>
+                    <span class="skill-tag">Python</span>
+                    <span class="skill-tag">React</span>
+                    <span class="skill-tag">Node.js</span>
+                    <span class="skill-tag">AWS</span>
+                    <span class="skill-tag">Docker</span>
+                    <span class="skill-tag">Kubernetes</span>
+                    <span class="skill-tag">CI/CD</span>
+                </div>
+            </div>
+            <div class="section-header">
+            </div>
+            <div id="qrCodeDisplay" class="qr-code-container" >
+      
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Template selection
+        // const templateSelect = document.querySelector('.template-select');
+        // templateSelect.addEventListener('change', () => {
+        //     alert(`Changed template to: ${templateSelect.value}`);
+        // });
+// Template selection
+        const templateSelect = document.querySelector('.template-select');
+        const resumePreview = document.querySelector('.resume-preview');
+        const layoutOptions = document.querySelectorAll('.layout-option');
+        
+        // Set first layout option as active by default
+        layoutOptions[0].classList.add('active');
+        
+        // Layout option click handlers
+        layoutOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                // Remove active class from all options
+                layoutOptions.forEach(opt => opt.classList.remove('active'));
+                // Add active class to clicked option
+                option.classList.add('active');
+                
+                // Update dropdown value
+                const layoutValue = option.dataset.layout;
+                templateSelect.value = layoutValue;
+                
+                // Apply layout changes
+                applyLayout(layoutValue);
+            });
+        });
+        
+        // Template dropdown change handler
+        templateSelect.addEventListener('change', () => {
+            const selectedLayout = templateSelect.value;
+            
+            // Update active layout option
+            layoutOptions.forEach(option => {
+                if (option.dataset.layout === selectedLayout) {
+                    option.classList.add('active');
+                } else {
+                    option.classList.remove('active');
+                }
+            });
+            
+            // Apply layout changes
+            applyLayout(selectedLayout);
+        });
+        
+        // Function to apply layout changes
+        function applyLayout(layout) {
+            // Remove all layout classes
+            resumePreview.classList.remove('default', 'modern', 'classic', 'creative', 'minimal');
+            
+            // Add selected layout class
+            resumePreview.classList.add(layout);
+            
+            // Show/hide appropriate content sections based on layout
+            if (layout === 'modern') {
+                // Show main content and sidebar for modern layout
+                document.querySelector('.resume-main-content').style.display = 'block';
+                document.querySelector('.resume-sidebar').style.display = 'block';
+                
+                // Hide default content
+                document.querySelectorAll('.resume-preview > .resume-header, .resume-preview > .resume-section').forEach(el => {
+                    if (!el.closest('.resume-main-content') && !el.closest('.resume-sidebar')) {
+                        el.style.display = 'none';
+                    }
+                });
+            } else {
+                // Hide modern layout sections
+                document.querySelector('.resume-main-content').style.display = 'none';
+                document.querySelector('.resume-sidebar').style.display = 'none';
+                
+                // Show default content
+                document.querySelectorAll('.resume-preview > .resume-header, .resume-preview > .resume-section').forEach(el => {
+                    if (!el.closest('.resume-main-content') && !el.closest('.resume-sidebar')) {
+                        el.style.display = 'block';
+                    }
+                });
+            }
+            
+            console.log(`Changed template to: ${layout}`);
+        }
+
+        // Color options
+        const colorOptions = document.querySelectorAll('.color-option');
+        colorOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                colorOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                document.documentElement.style.setProperty('--primary', option.style.background);
+            });
+        });
+
+        // Action buttons
+        const actionButtons = document.querySelectorAll('.action-btn');
+        actionButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                if (button.classList.contains('btn-download')) {
+                    window.print();
+                } else if (button.classList.contains('btn-edit')) {
+                    alert('Returning to edit mode');
+                } else if (button.classList.contains('btn-share')) {
+                    alert('Opening share options');
+                }
+            });
+        });
+        window.addEventListener('load', () => {
+        const qrCodeImage = sessionStorage.getItem('qrCodeImage'); // Retrieve QR code image
+        const qrCodeContainer = document.getElementById('qrCodeDisplay'); // QR code container
+        
+        if (qrCodeImage) {
+        const qrCodeDisplay = document.getElementById('qrCodeDisplay');
+        qrCodeDisplay.innerHTML = `
+            <div class="qr-code-container">
+                <img src="${qrCodeImage}" alt="QR Code">
+            </div>
+        `;
+    }
+    });
+    async function loadResumePreview() {
+    try {
+        const resumeId = localStorage.getItem('currentResumeId'); 
+        // Retrieve the current resume ID
+        const response = await fetch(`/api/resumes/${resumeId}`);
+        if (!response.ok) throw new Error('Failed to load resume data');
+
+        const data = await response.json();
+        displayResumeData(data);
+    } catch (error) {
+        console.error('Error loading resume data:', error);
+       
+    }
+}
+
+function displayResumeData(resume) {
+    // Set personal info
+    document.querySelector('.resume-name').textContent = `${resume.personal_info.first_name} ${resume.personal_info.last_name}`;
+    document.querySelector('.resume-contact').innerHTML = `
+        ${resume.personal_info.email} • ${resume.personal_info.phone} • ${resume.personal_info.address}
+    `;
+
+    // Add profile picture
+    const profilePicture = document.createElement('img');
+    // profilePicture.src = resume.personal_info.photo_url;
+    // profilePicture.alt = 'Profile Picture';
+    profilePicture.style.width = '150px';
+    profilePicture.style.height = '150px';
+    profilePicture.style.borderRadius = '50%';
+    profilePicture.style.objectFit = 'cover';
+
+
+    document.querySelector('.resume-header').prepend(profilePicture);
+
+    // Add QR code
+    const qrCodeContainer = document.getElementById('qrCodeDisplay');
+    qrCodeContainer.innerHTML = `
+        <img src="${resume.resume.qr_code_url}" alt="QR Code">
+    `;
+
+    // Set experience
+    const experienceSection = document.querySelector('.resume-section:nth-child(2)');
+    experienceSection.innerHTML = `
+        <h2 class="section-title">Professional Experience</h2>
+        ${resume.experience
+            .map(
+                exp => `
+                <div class="experience-item">
+                    <div class="item-header">
+                        <div class="item-title">${exp.job_title}</div>
+                        <div class="item-date">${exp.start_date} - ${exp.end_date}</div>
+                    </div>
+                    <div class="item-subtitle">${exp.company}</div>
+                    <div class="item-description">${exp.description}</div>
+                </div>
+            `
+            )
+            .join('')}
+    `;
+
+    // Set education
+    const educationSection = document.querySelector('.resume-section:nth-child(3)');
+    educationSection.innerHTML = `
+        <h2 class="section-title">Education</h2>
+        ${resume.education
+            .map(
+                edu => `
+                <div class="education-item">
+                    <div class="item-header">
+                        <div class="item-title">${edu.degree} in ${edu.field}</div>
+                        <div class="item-date">${edu.graduation_date}</div>
+                    </div>
+                    <div class="item-subtitle">${edu.institution}</div>
+                    <div class="item-description">${edu.description}</div>
+                </div>
+            `
+            )
+            .join('')}
+    `;
+
+    // Set skills
+    const skillsSection = document.querySelector('.resume-section:nth-child(4) .skills-list');
+    skillsSection.innerHTML = resume.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('');
+}
+
+// Load resume preview on page load
+window.addEventListener('load', loadResumePreview);
+// Add this script at the end of your FINAL_PAGE.html file
+async function loadResumeData(retry = false) {
+    try {
+        // Get the resume ID from localStorage
+        const resumeId = localStorage.getItem('currentResumeId');
+        if (!resumeId) {
+            console.error('No resume ID found');
+            return;
+        }
+
+        // Fetch resume data from your API
+        const response = await fetch(`/api/resumes/${resumeId}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch resume data');
+        const data = await response.json();
+        console.log('Loaded Resume Data:', data);
+        // Update personal information
+        if (data.personal_info) {
+            document.querySelector('.resume-name').textContent = 
+                `${data.personal_info.first_name} ${data.personal_info.last_name}`;
+            
+            document.querySelector('.resume-contact').innerHTML = `
+                ${data.personal_info.email} | ${data.personal_info.phone}<br>
+                ${data.personal_info.address}<br>
+                ${data.personal_info.summary || ''}
+            `;
+
+            // Update profile image if exists
+            if (data.personal_info.photo_url) {
+                // const profileImg = document.querySelector('.resume-header img');
+                const profileImg = document.createElement('img');
+                profileImg.src = data.personal_info.photo_url;
+                profileImg.style.width = '150px';
+                profileImg.style.height = '150px';
+                profileImg.style.borderRadius = '50%';
+                profileImg.style.objectFit = 'cover';
+              
+                document.querySelector('.resume-header').prepend(profileImg);
+            }
+        }
+
+        // Update experience section
+        if (data.experience && data.experience.length > 0) {
+            const experienceHTML = data.experience.map(exp => `
+                <div class="experience-item">
+                    <div class="item-header">
+                        <div class="item-title">${exp.job_title}</div>
+                        <div class="item-date">${exp.start_date} - ${exp.end_date}</div>
+                    </div>
+                    <div class="item-subtitle">${exp.company}</div>
+                    <div class="item-description">${exp.description}</div>
+                </div>
+            `).join('');
+            
+            document.querySelector('.resume-section:nth-of-type(2)').innerHTML = `
+                <h2 class="section-title">Professional Experience</h2>
+                ${experienceHTML}
+            `;
+        }
+
+        // Update education section
+        if (data.education && data.education.length > 0) {
+            const educationHTML = data.education.map(edu => `
+                <div class="education-item">
+                    <div class="item-header">
+                        <div class="item-title">${edu.degree}</div>
+                        <div class="item-date">${edu.graduation_date}</div>
+                    </div>
+                    <div class="item-subtitle">${edu.institution}</div>
+                    <div class="item-description">${edu.field}<br>${edu.description || ''}</div>
+                </div>
+            `).join('');
+            
+            document.querySelector('.resume-section:nth-of-type(3)').innerHTML = `
+                <h2 class="section-title">Education</h2>
+                ${educationHTML}
+            `;
+        }
+
+        // Display QR code if available
+        if (data.resume && data.resume.qr_code_url) {
+            const qrCodeDisplay = document.getElementById('qrCodeDisplay');
+            qrCodeDisplay.innerHTML = `
+                <img src="${data.resume.qr_code_url}" alt="Resume QR Code">
+            `;
+        }
+        loadQRCode(resumeId, data);
+    } catch (error) {
+        console.error('Error loading resume data:', error);
+        alert('Failed to load resume data. Please try again.');
+    }
+}
+//  Function to Load QR Code
+async function loadQRCode(resumeId, data) {
+    try {
+        const qrCodeImage = sessionStorage.getItem('qrCodeImage'); // Retrieve QR code from session storage
+        const qrCodeDisplay = document.getElementById('qrCodeDisplay');
+
+        if (qrCodeImage) {
+            qrCodeDisplay.innerHTML = `
+                <div class="qr-code-container">
+                    <img src="${qrCodeImage}" alt="QR Code">
+                </div>
+            `;
+        } else if (data.resume.qr_code_url) {
+            qrCodeDisplay.innerHTML = `
+                <div class="qr-code-container">
+                    <img src="${data.resume.qr_code_url}" alt="QR Code">
+                </div>
+            `;
+        } else {
+            console.log('QR Code not available in sessionStorage or API response.');
+        }
+    } catch (error) {
+        console.error('Error loading QR code:', error);
+    }
+}
+
+
+// Call the function when the page loads
+window.addEventListener('load', loadResumeData);
+
+    </script>
+</body>
+
+</html>

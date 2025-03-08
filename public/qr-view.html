@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scan Result</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --background-color: #f5f7fa;
+            --card-color: #ffffff;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--secondary-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2, h3 {
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .content-card {
+            background-color: var(--card-color);
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        #videoContainer {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        
+        video {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        #certificateContainer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .cert-item {
+            flex: 1 1 300px;
+            text-align: center;
+        }
+        
+        .cert-item img {
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            transition: transform 0.3s ease;
+        }
+        
+        .cert-item img:hover {
+            transform: scale(1.02);
+        }
+        
+        .cert-link {
+            display: inline-block;
+            margin-top: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .cert-link:hover {
+            background-color: #2980b9;
+        }
+        
+        .no-certs {
+            color: #7f8c8d;
+            font-style: italic;
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            header {
+                padding: 1rem;
+            }
+            
+            .content-card {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h2>QR Code Scan Result</h2>
+        </header>
+        
+        <div class="content-card">
+            <!-- Display Video -->
+            <div id="videoContainer"></div>
+            
+            <!-- Display Certificates -->
+            <h3 class="section-title">Certificates</h3>
+            <div id="certificateContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const videoUrl = urlParams.get("video");
+        const certificates = JSON.parse(decodeURIComponent(urlParams.get("certs") || "[]"));
+        
+        // Display video
+        if (videoUrl) {
+            document.getElementById("videoContainer").innerHTML = `
+                <video controls width="500">
+                    <source src="${videoUrl}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            `;
+        } else {
+            document.getElementById("videoContainer").innerHTML = `
+                <p class="no-certs">No video available</p>
+            `;
+        }
+        
+        // Display certificates
+        if (certificates.length > 0) {
+            const certContainer = document.getElementById("certificateContainer");
+            certificates.forEach(cert => {
+                if (cert.endsWith(".pdf")) {
+                    certContainer.innerHTML += `
+                        <div class="cert-item">
+                            <a href="${cert}" target="_blank" class="cert-link">View Certificate (PDF)</a>
+                        </div>
+                    `;
+                } else {
+                    certContainer.innerHTML += `
+                        <div class="cert-item">
+                            <img src="${cert}" alt="Certificate" width="300">
+                        </div>
+                    `;
+                }
+            });
+        } else {
+            document.getElementById("certificateContainer").innerHTML = `<p class="no-certs">No certificates available</p>`;
+        }
+    </script>
+</body>
+</html>

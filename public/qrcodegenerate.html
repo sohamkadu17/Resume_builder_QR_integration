@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload & Generate QR Code</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: #fff;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            background: #fff;
+            color: #333;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #6a11cb;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #444;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #6a11cb;
+            outline: none;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            background: #6a11cb;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #2575fc;
+        }
+
+        #addCertificateBtn {
+            background: #2575fc;
+        }
+
+        #addCertificateBtn:hover {
+            background: #1a5bbf;
+        }
+
+        #preview {
+            margin-top: 20px;
+        }
+
+        #preview h3 {
+            font-size: 18px;
+            color: #6a11cb;
+            margin-bottom: 10px;
+        }
+
+        #preview video, #certificatePreviews img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+     
+    
+        a {
+            text-decoration: none;
+            color: #2575fc;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+   
+    #scanResult {
+        margin-top: 20px;
+        font-size: 18px;
+        color: #333;
+    }
+
+    .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+    .nav-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    background: #6a11cb;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.nav-btn:hover {
+    background: #2575fc;
+}
+
+    @media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+}
+#qrCode {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        #qrCodeImage {
+            max-width: 200px;
+            margin: 0 auto;
+            display: block;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Video & Certificates</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <div class="input-group">
+                <label for="videoUpload">Upload Intro Video</label>
+                <input type="file" id="videoUpload" name="video" accept="video/*" required>
+            </div>
+            <div id="certificatesContainer">
+                <div class="input-group">
+                    <label for="certificateUpload1">Upload Certification</label>
+                    <input type="file" id="certificateUpload1" name="certificates" accept=".pdf,.jpg,.png" required>
+                </div>
+            </div>
+            <button type="button" id="addCertificateBtn">Add More Certificates</button>
+            <button type="submit" id="generateQrBtn">Generate QR Code</button>
+        </form>
+        <div id="preview">
+            <h3>Uploaded Files Preview:</h3>
+            <video id="videoPreview" controls style="display: none;"></video>
+            <div id="certificatePreviews"></div>
+        </div>
+
+        <div id="qrCode">
+            <h3>Generated QR Code:</h3>
+            <img id="qrCodeImage" style="display:none;">
+        <!-- <button id="saveQrBtn" style="display:none;">Save QR Code</button> -->
+   
+   
+    </div>
+    <div class="nav-buttons">
+        <button type="button" onclick="window.location.href='AFTER_INTERFACE3.html'" class="nav-btn btn-back">Back</button>
+        <button type="button" onclick="window.location.href='review_trials.html'" class="nav-btn btn-next">Next Step</button>
+    </div>
+    <!-- QR Code Preview Section -->
+    <script>
+          document.getElementById('addCertificateBtn').addEventListener('click', () => {
+            const certificatesContainer = document.getElementById('certificatesContainer');
+            const inputGroup = document.createElement('div');
+            inputGroup.className = 'input-group';
+            inputGroup.innerHTML = `
+                <label>Upload Certification</label>
+                <input type="file" name="certificates" accept=".pdf,.jpg,.png">
+            `;
+            certificatesContainer.appendChild(inputGroup);
+        });
+
+        document.getElementById('uploadForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const resumeId = localStorage.getItem('currentResumeId'); // Get saved Resume ID
+            if (resumeId) {
+                formData.append('resumeId', resumeId);
+            }
+
+            try {
+
+                const ngrokResponse = await fetch("/api/ngrok-url");
+        const ngrokData = await ngrokResponse.json();
+        const ngrokUrl = ngrokData.ngrokUrl || "http://localhost:3000";  // Fallback for local use
+
+        console.log("Using ngrok URL:", ngrokUrl);
+        const response = await fetch(`${ngrokUrl}/uploads`, {
+            method: 'POST',
+            body: formData,
+        });
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || 'Error uploading files.');
+                }
+
+                // Display QR code
+                const qrCodeImage = document.getElementById('qrCodeImage');
+                qrCodeImage.src = `${result.qrCode}`;
+                qrCodeImage.style.display = 'block';
+
+                // Show Save button
+                // document.getElementById('saveQrBtn').style.display = 'block';
+
+                // Save to session storage       
+        sessionStorage.setItem('qrCodeImage', result.qrCode);
+            
+            setTimeout(() => {
+            window.location.href = `review_trials.html?resumeId=${result.resumeId}`;
+        }, 2000); // Give time to see the QR code
+    }
+            catch (error) {
+                console.error('Upload Error:', error);
+                alert('An error occurred while generating the QR Code.');
+            }
+        });
+
+        // Load QR code if previously generated
+        window.addEventListener('load', () => {
+            const savedQrCode = sessionStorage.getItem('qrCodeImage');
+            if (savedQrCode) {
+                const qrCodeImage = document.getElementById('qrCodeImage');
+                qrCodeImage.src= savedQrCode;
+                qrCodeImage.style.display = 'display';
+                document.getElementById('saveQrBtn').style.display = 'block';
+            }
+        });
+    </script>
+
+
+</body>
+</html>

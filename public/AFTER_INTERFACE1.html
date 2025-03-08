@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Template</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center mb-8">Choose Your Resume Template</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Template 1 -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+             <center>   <img src="template.jpeg" alt="Template 1" class="w-full h-48 object-cover"></center>
+                <div class="p-4">
+                    <h3 class="text-xl font-semibold mb-2">Professional Template</h3>
+                    <p class="text-gray-600 mb-4">Clean and modern design perfect for any profession</p>
+                    <button onclick="selectTemplate(1)" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
+                        Select Template
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script>
+        function selectTemplate(templateId) {
+            localStorage.setItem('selectedTemplate', templateId);
+            window.location.href = '/AFTER_INTERFACE2.html';
+        }
+    </script>
+    <script src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Template</title>
+    <style>
+        .resume-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            font-family: Arial, sans-serif;
+        }
+        
+        .header {
+            text-align: center; 
+            margin-bottom: 30px;
+        }
+        
+        .name {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .contact-info {
+            margin-bottom: 20px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            border-bottom: 2px solid #333;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .experience-item, .education-item {
+            margin-bottom: 20px;
+        }
+        
+        .company-name, .school-name {
+            font-weight: bold;
+        }
+        
+        .date-location {
+            color: #666;
+            font-style: italic;
+        }
+        
+        @media print {
+            .resume-container {
+                padding: 0;
+            }
+            
+            body {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+        
+        @media screen and (max-width: 600px) {
+            .resume-container {
+                padding: 20px;
+            }
+            
+            .name {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="resume-container">
+        <div class="header">
+            <div class="name" id="fullName"></div>
+            <div class="contact-info">
+                <div id="email"></div>
+                <div id="phone"></div>
+                <div id="address"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Professional Summary</h2>
+            <div id="summary"></div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Experience</h2>
+            <div id="experienceContainer"></div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Education</h2>
+            <div id="educationContainer"></div>
+        </div>
+    </div>
+    <script src="/js/template-renderer.js"></script>
+</body>
+</html>
