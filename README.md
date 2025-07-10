@@ -42,7 +42,7 @@ Traditional resumes fall short in showcasing a candidate's personality, creativi
 
 ## 📸 Screenshots
 
-> ⚡ Add these images to your `/assets` or `/screenshots` folder in the repo.
+
 
 | Resume Builder UI | QR Redirect Page | Resume Download |
 |-------------------|------------------|------------------|
